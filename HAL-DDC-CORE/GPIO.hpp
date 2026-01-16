@@ -20,21 +20,29 @@
 /* * HAL Libs */
 #include "gpio.h"
 
-/* * type defines */
-using GPIO_Port = GPIO_TypeDef*;
-using GPIO_Pin  = uint16_t;
-
-struct Pin
+class Pin
 {
-    GPIO_Port port    = nullptr; 
+    public:
+    /* * type defines */
+    using GPIO_Port = GPIO_TypeDef*;
+    using GPIO_Pin  = uint16_t;
+
+    /* * Costructor */
+    Pin(GPIO_Port p, GPIO_Pin n)
+    : port(p), pin_num(n)
+    {}
+
+    /* * Public APIs */
+    void High(){if(port&&pin_num)port->BSRR = pin_num;}
+
+    void Low() {if(port&&pin_num)port->BSRR = (uint32_t)pin_num << 16U;}
+
+    void Toggle(){if(port&&pin_num)port->ODR ^= pin_num;}
+    
+
+    protected:
+    GPIO_Port port    = nullptr;
     GPIO_Pin  pin_num = 0;       // GPIO_PIN_x
-    Pin() = default;
-    Pin(GPIO_Port p, GPIO_Pin n) : port(p), pin_num(n) {}
-    void High  ();
-    void Low   ();
-    void Toggle();
 };
 
-Pin GPIO_Register(GPIO_Port   port,
-                  GPIO_Pin    pin_num);
 
