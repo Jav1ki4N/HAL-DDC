@@ -8,7 +8,6 @@
 #include "TIMER.hpp"
 #include <algorithm>
 #include <type_traits>
-#include "stm32_hal_legacy.h"
 #include "stm32f411xe.h"
 
 /* * TIMER GENERAL */

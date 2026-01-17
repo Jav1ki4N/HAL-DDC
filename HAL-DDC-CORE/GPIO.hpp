@@ -4,9 +4,6 @@
 /* *         Part of HAL-DDC               */
 /* *            2026 @i4N                  */
 /*******************************************/
-/* * Personally I don't think GPIO should  */
-/* * have a class                          */
-/*******************************************/
 /* * This is functional only if GPIO is    */
 /* * Configured via CubeMX, itself doesn't */
 /* * intend to init any hardware           */
@@ -20,9 +17,13 @@
 /* * HAL Libs */
 #include "gpio.h"
 
+/* * C++ */
+
+
 class Pin
 {
     public:
+
     /* * type defines */
     using GPIO_Port = GPIO_TypeDef*;
     using GPIO_Pin  = uint16_t;
@@ -30,8 +31,10 @@ class Pin
     /* * Costructor */
     Pin(GPIO_Port p, GPIO_Pin n)
     : port(p), pin_num(n)
-    {}
-
+    {
+      
+    }
+   
     /* * Public APIs */
     void High(){if(port&&pin_num)port->BSRR = pin_num;}
 
@@ -41,8 +44,9 @@ class Pin
     
 
     protected:
-    GPIO_Port port    = nullptr;
-    GPIO_Pin  pin_num = 0;       // GPIO_PIN_x
+    GPIO_Port port        = nullptr;
+    GPIO_Pin  pin_num     = 0;       // GPIO_PIN_x
+  
 };
 
 

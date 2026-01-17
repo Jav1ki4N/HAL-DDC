@@ -12,8 +12,6 @@
 
 /* * HAL Libs */
 #include "tim.h"
-
-#include <algorithm>
 #include <concepts>
 
 class Timer
@@ -54,7 +52,7 @@ class PWM : public Timer
            this->Channel != TIM_CHANNEL_3 &&
            this->Channel != TIM_CHANNEL_4)
         {
-            this->Channel = TIM_CHANNEL_1;
+           this->Channel = TIM_CHANNEL_1;
         }
     }
 
