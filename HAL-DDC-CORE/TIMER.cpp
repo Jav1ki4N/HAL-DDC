@@ -8,6 +8,7 @@
 #include "TIMER.hpp"
 #include <algorithm>
 #include <type_traits>
+#include "stm32_hal_legacy.h"
 #include "stm32f411xe.h"
 
 /* * TIMER GENERAL */
@@ -52,5 +53,7 @@ void PWM::Set_Duty(T duty) noexcept
           case TIM_CHANNEL_3:this->HTIM->Instance->CCR3 = ccr;break;
           case TIM_CHANNEL_4:this->HTIM->Instance->CCR4 = ccr;break;
           default:break;
+
+          __HAL_TIM_SetCompare(this->HTIM, this->Channel, ccr);
      }
 }

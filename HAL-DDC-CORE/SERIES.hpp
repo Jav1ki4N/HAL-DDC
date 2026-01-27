@@ -11,11 +11,12 @@
 /* * Once one serie is selected it will be undefined */
 #define UNSELECTED
 
-#define F4 1 
+#define F4 1
 #if F4
     #if defined UNSELECTED
         #include "stm32f4xx.h"
-        #undef UNSELECTED
+        #undef  UNSELECTED
+        #define SELECTED
     #else
         #error "A MCU Series is already selected above"
     #endif
@@ -25,8 +26,13 @@
 #if H7
     #if defined UNSELECTED
         #include "stm32h7xx.h"
-        #undef UNSELECTED
+        #undef  UNSELECTED
+        #define SELECTED
     #else
         #error "A MCU Series is already selected above"
     #endif
+#endif
+
+#ifndef SELECTED
+    #error "You must select one MCU Series"
 #endif
