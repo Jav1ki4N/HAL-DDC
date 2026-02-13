@@ -9,7 +9,7 @@ extern "C"{
 #endif
 	/* This function is to be called in main.c and cppmain.cpp */
 	/* So the linkage must be C */
-	void cppmain();
+	//void cppmain();
 
 #ifdef __cplusplus
 }

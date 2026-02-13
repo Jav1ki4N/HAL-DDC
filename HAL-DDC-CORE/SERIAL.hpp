@@ -150,9 +150,6 @@ class SERIAL
             head_index = 0;
             tail_index = 0;
         }
-
-        
-
     }FIFO;
 
     private:

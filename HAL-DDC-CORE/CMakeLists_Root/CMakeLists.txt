@@ -47,12 +47,12 @@ file(GLOB SYSTEM
         #"${CMAKE_CURRENT_SOURCE_DIR}/System.i4N/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/System.i4N/*.cpp"
 )
-file(GLOB FREERTOS
-        #"${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/*.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/*.c"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/**/*.c"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/**/**/*.c"
-)
+# file(GLOB FREERTOS
+#         #"${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/*.h"
+#         "${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/*.c"
+#         "${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/**/*.c"
+#         "${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/**/**/*.c"
+# )
 file(GLOB_RECURSE LVGL_SRC CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/Middleware.i4N/LVGL/*.c"        # nothing here normmally
     #"${CMAKE_CURRENT_SOURCE_DIR}/Middleware.i4N/LVGL/*.h"        # lvgl.h / lv_conf.h / lv_version.h
@@ -66,7 +66,7 @@ file(GLOB_RECURSE LVGL_SRC CONFIGURE_DEPENDS
 add_executable(${CMAKE_PROJECT_NAME}
                ${HARDWARE}
                ${SYSTEM}
-               ${FREERTOS}
+               #${FREERTOS}
                ${LVGL_SRC}
 )
 
@@ -84,7 +84,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/Hardware.i4N
         ${CMAKE_CURRENT_SOURCE_DIR}/System.i4N
         ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares
-        ${FREERTOS}
+        #${FREERTOS}
         ${LVGL_SRC}
 )
 
@@ -96,10 +96,10 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/System.i4N
         ${CMAKE_CURRENT_SOURCE_DIR}/Middleware.i4N/LVGL
         ${CMAKE_CURRENT_SOURCE_DIR}/Middleware.i4N/LVGL/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source
-        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
-        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable
+        # ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source
+        # ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
+        # ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include
+        # ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable
 )
  
 # Add project symbols (macros)
