@@ -3,5 +3,3 @@
 
 This project is a **C++ encapsulation** and **driver collection** of ST's HAL Library for STM32 MCUs.
 
-I write this mainly for a better customization & management of my STM MCU projects.
-
