@@ -1,7 +1,7 @@
 /*******************************************/
 /* *              GPIO                     */
 /* *         GPIO Expansion                */
-/* *         Part of HAL-DDC               */
+/* *            HAL-DDC                    */
 /* *            2026 @i4N                  */
 /*******************************************/
 /* * This is functional only if GPIO is    */
@@ -34,6 +34,7 @@ class Pin
     {
       
     }
+    Pin() = default;
    
     /* * Public APIs */
     void High(){if(port&&pin_num)port->BSRR = pin_num;}
@@ -45,8 +46,7 @@ class Pin
 
     protected:
     GPIO_Port port        = nullptr;
-    GPIO_Pin  pin_num     = 0;       // GPIO_PIN_x
-  
+    GPIO_Pin  pin_num     = 0;       // GPIO_PIN_x  
 };
 
 

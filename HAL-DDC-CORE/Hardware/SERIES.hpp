@@ -1,7 +1,7 @@
 /*******************************************/
 /* *            SERIES.hpp                 */
 /* *   MCU Series Selection & Control      */
-/* *         Part of HAL-DDC               */
+/* *             HAL-DDC                   */
 /* *            2026 @i4N                  */
 /*******************************************/
 
@@ -22,7 +22,7 @@
     #endif
 #endif
 
-#define H7 0 
+#define H7 0
 #if H7
     #if defined UNSELECTED
         #include "stm32h7xx.h"
@@ -34,5 +34,5 @@
 #endif
 
 #ifndef SELECTED
-    #error "You must select one MCU Series"
+    #error "You must select one MCU Serie"
 #endif

@@ -93,6 +93,7 @@ class SERIAL
     char TxBuffer[MAX_BUFFER_SIZE]{0};
     
     /* * FIFO Ring Buffer */
+    /* todo untested      */
     struct FIFO
     {
         static constexpr uint16_t MAX_FIFO_SIZE{512};
