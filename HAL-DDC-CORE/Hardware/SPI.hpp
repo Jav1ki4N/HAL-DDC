@@ -21,17 +21,46 @@
 #include "GPIO.hpp"
 #include "stm32f4xx_hal_spi.h"
 
-
-class SPI
+class SPIBus
 {
     public:
 
     /* * Constructor */
-    SPI(SPI_HandleTypeDef* hspi)
+
+    SPIBus(SPI_HandleTypeDef* hspi)
     :HSPI(hspi)
     {}
 
-    /* * Public Vars */
+    /* * Vars */
+
+    SPI_HandleTypeDef* HSPI = nullptr;
+
+    /* * APIs */
+
+    bool isBusy()
+    {
+        return (HAL_SPI_GetState(HSPI) != HAL_SPI_STATE_READY);
+    }
+
+    void Transmit_Core(byte* data, uint16_t size)
+    {
+        while(isBusy());
+        HAL_SPI_Transmit(HSPI, data, size, HAL_MAX_DELAY);
+    }
+
+    /**********************************************************/
+
+    void Transmit_Core_DMA(byte* data, uint16_t size)
+    {
+        HAL_SPI_Transmit_DMA(HSPI, data, size);
+        /* todo */
+        //while (HAL_SPI_GetState(HSPI) != HAL_SPI_STATE_READY);
+    }
+};
+
+class SPIDevice
+{
+    public:
 
     enum class Polarity:bool
     {
@@ -39,111 +68,74 @@ class SPI
         ACTIVATE_AT_HIGH = false // Chip selected at CS high
     };
 
+    enum class Line:uint8_t
+    {
+        FOUR = 4,
+        THREE = 3,
+    };
+
+    /* * Constructor */
+    SPIDevice(SPIBus*       bus,
+              uint16_t      rst_pin,
+              uint16_t      cs_pin,
+              uint16_t      dc_pin,
+              GPIO_TypeDef* rst_port,
+              Polarity      polarity,
+              Line          line,
+              GPIO_TypeDef* cs_port  = nullptr,
+              GPIO_TypeDef* dc_port  = nullptr
+    )
+    :spi(bus),
+     polarity(polarity), 
+     line(line), 
+     RST(rst_port, rst_pin), 
+     CS((cs_port)?cs_port:rst_port, cs_pin), 
+     DC((dc_port)?dc_port:rst_port, dc_pin)
+    {
+        assert_param(bus!=nullptr);
+    }
+    
+
+    /* * Vars */
+
+    SPIBus*  spi = nullptr;
+    Polarity polarity;
+    Line     line;
+    
+
     enum class DataType:bool
     {
         DATA    = true, // sends data
         COMMAND = false // sends command
     };
 
-    enum class LINE:uint8_t
+    /* * APIs */
+
+    template <size_t N>
+    void Transmit( byte (&data)[N],
+                   DataType type     = DataType::DATA,
+                   uint16_t size     = N             )
     {
-        FOUR = 4,
-        THREE = 3,
-    };
-
-    /* * Public APIs */
-    
-    void Register_RST(GPIO_TypeDef*p, uint16_t n)
-    {RST = Pin(p, n);}
-    
-    void Register_CS(GPIO_TypeDef*p, uint16_t n)
-    {CS = Pin(p, n);}
-
-    void Register_DC(GPIO_TypeDef*p, uint16_t n)
-    {DC = Pin(p, n);}
-
-    /***********************************************************/
-
-    /* Core of none-DMA send sequence */
-    void SendCore( byte*    data,
-                   uint16_t size,
-                   DataType type,
-                   Polarity polarity = Polarity::ACTIVATE_AT_LOW,
-                   LINE     line     = LINE::FOUR               )
-    {
-        if(line == LINE::FOUR)(type == DataType::DATA) ? DC.High() : DC.Low();
-        (polarity == Polarity::ACTIVATE_AT_LOW) ?        CS.Low()  : CS.High();
-        HAL_SPI_Transmit(HSPI, data, size, HAL_MAX_DELAY);
-        (polarity == Polarity::ACTIVATE_AT_LOW) ?        CS.High() : CS.Low();
+        if(line == Line::FOUR)(type == DataType::DATA)?DC.High():DC.Low (); // data type
+        (polarity == Polarity::ACTIVATE_AT_LOW)?       CS.Low ():CS.High(); // chip selected
+        spi->Transmit_Core(data, size);
+        (polarity == Polarity::ACTIVATE_AT_LOW)?       CS.High():CS.Low (); // chip deselected
     }
 
-    /* normal none-DMA send function, data can be single or string/array */
-    template<size_t N>
-    void Send( byte     (&data)[N],
-               DataType type,
-               uint16_t size = N,
-               Polarity polarity = Polarity::ACTIVATE_AT_LOW,
-               LINE     line     = LINE::FOUR               )
+    void Transmit( byte     data,
+                   DataType type = DataType::DATA )
     {
-        SendCore(data,size,type,polarity,line);
+        if(line == Line::FOUR)(type == DataType::DATA)?DC.High():DC.Low (); // data type
+        (polarity == Polarity::ACTIVATE_AT_LOW)?       CS.Low ():CS.High(); // chip selected
+        spi->Transmit_Core(&data, 1);
+        (polarity == Polarity::ACTIVATE_AT_LOW)?       CS.High():CS.Low (); // chip deselected
     }
 
-    void Send( byte     data,
-			   DataType type,
-			   Polarity polarity = Polarity::ACTIVATE_AT_LOW,
-			   LINE     line     = LINE::FOUR               )
-	{
-		SendCore(&data,1,type,polarity,line);
-	}
-    
-    /***************************************************************/
+    /***/
+    /* todo: DMA */
 
-    /* Core of DMA send sequence */
-    void SendCore_DMA( byte*    data,
-                       uint16_t size,
-                       DataType type,
-                       Polarity polarity = Polarity::ACTIVATE_AT_LOW,
-                       LINE     line     = LINE::FOUR               )
-    {
-        if(line == LINE::FOUR)(type == DataType::DATA) ? DC.High() : DC.Low();
-        (polarity == Polarity::ACTIVATE_AT_LOW) ?        CS.Low()  : CS.High();
-        HAL_SPI_Transmit_DMA(HSPI, data, size);
-        // Chip unselect is handled in the DMA complete callback
-        while (HAL_SPI_GetState(HSPI) != HAL_SPI_STATE_READY);
-    }
-
-    /* normal DMA send function, data can be single or string/array */
-    template<size_t N>
-    void Send_DMA( byte     (&data)[N],
-               DataType type,
-               uint16_t size = N,
-               Polarity polarity = Polarity::ACTIVATE_AT_LOW,
-               LINE     line     = LINE::FOUR               )
-    {
-        SendCore_DMA(data,size,type,polarity,line);
-    }
-
-    void Send_DMA( byte     data,
-			   DataType type,
-			   Polarity polarity = Polarity::ACTIVATE_AT_LOW,
-			   LINE     line     = LINE::FOUR               )
-	{
-		SendCore_DMA(&data,1,type,polarity,line);
-	}
-
-    /* Chip unselect function on DMA completion */
-    void On_DMAComplete(Polarity polarity = Polarity::ACTIVATE_AT_LOW)
-    {
-        (polarity == Polarity::ACTIVATE_AT_LOW) ? CS.High() : CS.Low();
-    }
-
-    protected:
+ protected:
 
     /* * Vars */
-
-    SPI_HandleTypeDef* HSPI = nullptr;
-    Pin RST, // Reset
-        CS,  // Chip Select 
-        DC;  // Data/Command
-    private:
+    Pin RST,CS,DC;
 };
