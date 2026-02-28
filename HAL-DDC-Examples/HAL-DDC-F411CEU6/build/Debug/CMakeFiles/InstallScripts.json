@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/Project.i4N/STM32/HAL-DDC-F411CEU6/build/Debug/cmake_install.cmake",
+		"D:/Project.i4N/STM32/HAL-DDC-F411CEU6/build/Debug/cmake/stm32cubemx/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
